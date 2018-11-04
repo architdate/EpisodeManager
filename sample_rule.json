@@ -1,0 +1,18 @@
+{
+    "enabled": true,
+    "mustContain": "",
+    "mustNotContain": "",
+    "useRegex": false,
+    "episodeFilter": "",
+    "smartFilter": false,
+    "previouslyMatchedEpisodes": [
+    ],
+    "affectedFeeds": [
+        ""
+    ],
+    "ignoreDays": 0,
+    "lastMatch": "",
+    "addPaused": false,
+    "assignedCategory": "",
+    "savePath": ""
+}
