@@ -24,6 +24,21 @@ class SimpleCog:
     def __init__(self, bot):
         self.bot = bot
 
+    async def check(self, ctx, val):
+        def is_numb(msg):
+            if msg.author == ctx.message.author:
+                if msg.content.isdigit() and val != 0:
+                    return 0 < int(msg.content) < val
+                elif val == 0:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+        reply = await self.bot.wait_for("message", check=is_numb)
+        return reply
+
     @commands.command(name='repeat', aliases=['copy', 'mimic'])
     async def do_repeat(self, ctx, *, our_input: str):
         """A simple command which repeats our input.
@@ -53,65 +68,76 @@ class SimpleCog:
         await ctx.send(content='**A simple Embed for discord.py@rewrite in cogs.**', embed=embed)
 
     @commands.command(name='setup')
-    async def setup(self, ctx):
+    async def setup(self, ctx, *, msg:str = None):
         args = []
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 1', value='What is the name of the Show?')
-        await ctx.send(content='**Plex Show Setup**', embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 2', value='Enter a valid RSS feed for the show')
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 3', value='Enter a unique file identifier for the RSS Shows (Only files with this string will be downloaded from the feed)')
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 4', value="Enter a string to identify the media file from the torrent (Can be 'The.Big.Bang.Theory' or '.mkv' for example)")
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 5', value='Enter First Split for episode rename')
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 6', value='Enter Second Split for episode rename')
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 7', value='Enter path for the new episode to be saved')
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 8', value='Enter TVDB ID for being notified about the new episode')
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        embed = discord.Embed(color=discord.Color.gold(), title='Setup Plex Show', description='Setup an RSS feed for the shows to appear in your Plex')
-        embed.add_field(name='Setup Step 9', value='Download new episodes only? (Y/N)')
-        await ctx.send(embed = embed)
-        reply = await self.bot.wait_for("message")
-        if reply.content == "cancel()": return
-        args.append(reply.content)
-        sf.argsetup(args)
-        embed = discord.Embed(color=discord.Color.gold(), title='Plex Show Setup Complete', description='Enjoy your show! You can check for updates in the #updates channel')
-        await ctx.send(embed=embed)
+        def plexembed(title, description, color = discord.Color.gold()):
+            return discord.Embed(color = color, title= title, description=description)
+        if not msg:
+            await ctx.send(content = "**Setup Step 1**", embed = plexembed("Setup Plex Show", "What is the name of the Show?"))
+            reply = await self.check(ctx, 0)
+            if reply:
+                await reply.delete()
+                if reply.content == "cancel()": return
+                args.append(reply.content.strip())
+                await ctx.send(content = "**Setup Step 2**", embed = plexembed("Setup Plex Show", "Enter a valid RSS feed for the show"))
+                reply = await self.check(ctx, 0)
+                if reply:
+                    await reply.delete()
+                    if reply.content == "cancel()": return
+                    args.append(reply.content.strip())
+                    await ctx.send(content = "**Setup Step 3**", embed = plexembed("Setup Plex Show", "Enter a unique file identifier for the RSS Shows (Only files with this string will be downloaded from the feed)"))
+                    reply = await self.check(ctx, 0)
+                    if reply:
+                        await reply.delete()
+                        if reply.content == "cancel()": return
+                        args.append(reply.content.strip())
+                        await ctx.send(content = "**Setup Step 4**", embed = plexembed("Setup Plex Show", "Enter a string to identify the media file from the torrent (Can be 'The.Big.Bang.Theory' or '.mkv' for example)"))
+                        reply = await self.check(ctx, 0)
+                        if reply:
+                            await reply.delete()
+                            if reply.content == "cancel()": return
+                            args.append(reply.content.strip())
+                            await ctx.send(content = "**Setup Step 5**", embed = plexembed("Setup Plex Show", "Enter First Split for episode rename"))
+                            reply = await self.check(ctx, 0)
+                            if reply:
+                                await reply.delete()
+                                if reply.content == "cancel()": return
+                                args.append(reply.content.strip())
+                                await ctx.send(content = "**Setup Step 6**", embed = plexembed("Setup Plex Show", "Enter Second Split for episode rename"))
+                                reply = await self.check(ctx, 0)
+                                if reply:
+                                    await reply.delete()
+                                    if reply.content == "cancel()": return
+                                    args.append(reply.content.strip())
+                                    await ctx.send(content = "**Setup Step 7**", embed = plexembed("Setup Plex Show", "Enter path for the new episode to be saved"))
+                                    reply = await self.check(ctx, 0)
+                                    if reply:
+                                        await reply.delete()
+                                        if reply.content == "cancel()": return
+                                        args.append(reply.content.strip())
+                                        await ctx.send(content = "**Setup Step 8**", embed = plexembed("Setup Plex Show", "Enter TVDB ID for being notified about the new episode"))
+                                        reply = await self.check(ctx, 0)
+                                        if reply:
+                                            await reply.delete()
+                                            if reply.content == "cancel()": return
+                                            args.append(reply.content.strip())
+                                            await ctx.send(content = "**Setup Step 9**", embed = plexembed("Setup Plex Show", "Download new episodes only? (Y/N)"))
+                                            reply = await self.check(ctx, 0)
+                                            if reply:
+                                                await reply.delete()
+                                                if reply.content == "cancel()": return
+                                                args.append(reply.content.strip())
+                                                await ctx.send(content="**Confirm Selections? (Y/N)**", embed = plexembed("Selections", ", ".join(args)))
+                                                reply = await self.check(ctx, 0)
+                                                if reply:
+                                                    await reply.delete()
+                                                    if reply.content.lower() == "n":
+                                                        await ctx.send(embed = plexembed("Plex Show Setup Cancelled", "The Show **{}** was not added".format(args[0])))
+                                                        return
+                                                    else:
+                                                        sf.argsetup(args)
+                                                        embed = discord.Embed(color=discord.Color.gold(), title='Plex Show Setup Complete', description='The Show **{}** was added successfully. Enjoy your show! You can check for updates in the #updates channel'.format(args[0]))
+                                                        await ctx.send(embed=embed)
 
 
 # The setup fucntion below is neccesarry. Remember we give bot.add_cog() the name of the class in this case SimpleCog.
