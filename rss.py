@@ -60,11 +60,11 @@ def form_rule(mustContain, affectedFeeds, onlynew = True):
     return rule
 
 def part_a():
-    cookie = login('username', 'password')
+    cookie = login(config['webui_user'], config['webui_pass'])
     return add_feeds(data, cookie)
 
 def part_b(urls, onlynew = True):
-    cookie = login('username', 'password')
+    cookie = login(config['webui_user'], config['webui_pass'])
     add_rules(data, urls, cookie, onlynew)
 
 if __name__ == "__main__":
