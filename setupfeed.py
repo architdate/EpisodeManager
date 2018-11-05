@@ -24,9 +24,9 @@ def argsetup(arglist):
     r = requests.put("http://api.jsonbin.io/b/{}".format(config['jsonbin_key']), json = data, headers = {'Content-Type':'application/json'})
 
     if dlr:
-        os.system("python rss.py true {} {}".format(onlynew, config['webui_ipport']))
+        os.system("{} rss.py true {}".format(config['python_call'], onlynew))
     else:
-        os.system("python rss.py false {} {}".format(onlynew))
+        os.system("{} rss.py false {}".format(config['python_call'], onlynew))
 
 
 if __name__ == "__main__":
