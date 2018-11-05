@@ -1,24 +1,25 @@
 import discord
+import json
 import os
+import requests
 import setupfeed as sf
+import urllib.parse
 from discord.ext import commands
 
+def tvdb_recommendation(searchterm):
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+    apikey = config['tvdb_api']
+    tvdbtoken = json.loads(requests.post("https://api.thetvdb.com/login", data = json.dumps({"apikey":apikey}), headers = {"Content-Type": "application/json", "Accept":"application/json"}).text)['token']
+    query = {"name":searchterm}
+    headers = {"Accept":"application/json", "Authorization":"Bearer {}".format(tvdbtoken)}
+    try:
+        series_id = int(json.loads(requests.get("https://api.thetvdb.com/search/series?" + urllib.parse.urlencode(query), headers=headers).text)['data'][0]['id'])
+    except:
+        series_id = -1
+    return series_id
 
-"""A simple cog example with simple commands. Showcased here are some check decorators, and the use of events in cogs.
-
-For a list of inbuilt checks:
-http://dischttp://discordpy.readthedocs.io/en/rewrite/ext/commands/api.html#checksordpy.readthedocs.io/en/rewrite/ext/commands/api.html#checks
-
-You could also create your own custom checks. Check out:
-https://github.com/Rapptz/discord.py/blob/master/discord/ext/commands/core.py#L689
-
-For a list of events:
-http://discordpy.readthedocs.io/en/rewrite/api.html#event-reference
-http://discordpy.readthedocs.io/en/rewrite/ext/commands/api.html#event-reference
-"""
-
-
-class SimpleCog:
+class Setup:
     """SimpleCog"""
 
     def __init__(self, bot):
@@ -39,34 +40,6 @@ class SimpleCog:
         reply = await self.bot.wait_for("message", check=is_numb)
         return reply
 
-    @commands.command(name='repeat', aliases=['copy', 'mimic'])
-    async def do_repeat(self, ctx, *, our_input: str):
-        """A simple command which repeats our input.
-        In rewrite Context is automatically passed to our commands as the first argument after self."""
-
-        await ctx.send(our_input)
-
-    @commands.command(name='embeds')
-    @commands.guild_only()
-    async def example_embed(self, ctx):
-        """A simple command which showcases the use of embeds.
-
-        Have a play around and visit the Visualizer."""
-
-        embed = discord.Embed(color=discord.Color.gold(), title='Example Embed',
-                              description='Showcasing the use of Embeds...\nSee the visualizer for more info.',
-                              colour=0x98FB98)
-        embed.set_author(name='MysterialPy',
-                         url='https://gist.github.com/MysterialPy/public',
-                         icon_url='http://i.imgur.com/ko5A30P.png')
-        embed.set_image(url='https://cdn.discordapp.com/attachments/84319995256905728/252292324967710721/embed.png')
-
-        embed.add_field(name='Embed Visualizer', value='[Click Here!](https://leovoel.github.io/embed-visualizer/)')
-        embed.add_field(name='Command Invoker', value=ctx.author.mention)
-        embed.set_footer(text='Made in Python with discord.py@rewrite', icon_url='http://i.imgur.com/5BFecvA.png')
-
-        await ctx.send(content='**A simple Embed for discord.py@rewrite in cogs.**', embed=embed)
-
     @commands.command(name='setup')
     async def setup(self, ctx, *, msg:str = None):
         args = []
@@ -85,7 +58,7 @@ class SimpleCog:
                     await reply.delete()
                     if reply.content == "cancel()": return
                     args.append(reply.content.strip())
-                    await ctx.send(content = "**Setup Step 3**", embed = plexembed("Setup Plex Show", "Enter a unique file identifier for the RSS Shows (Only files with this string will be downloaded from the feed)"))
+                    await ctx.send(content = "**Setup Step 3**", embed = plexembed("Setup Plex Show", "Enter a unique file identifier for the RSS Shows (Only files with this string will be downloaded from the feed). The recommendation is : `*{}*`".format(args[0])))
                     reply = await self.check(ctx, 0)
                     if reply:
                         await reply.delete()
@@ -115,7 +88,7 @@ class SimpleCog:
                                         await reply.delete()
                                         if reply.content == "cancel()": return
                                         args.append(reply.content.strip())
-                                        await ctx.send(content = "**Setup Step 8**", embed = plexembed("Setup Plex Show", "Enter TVDB ID for being notified about the new episode"))
+                                        await ctx.send(content = "**Setup Step 8**", embed = plexembed("Setup Plex Show", "Enter TVDB ID for being notified about the new episode. Recommended ID is: {}".format(tvdb_recommendation(args[0]))))
                                         reply = await self.check(ctx, 0)
                                         if reply:
                                             await reply.delete()
@@ -143,4 +116,4 @@ class SimpleCog:
 # The setup fucntion below is neccesarry. Remember we give bot.add_cog() the name of the class in this case SimpleCog.
 # When we load the cog, we use the name of the file.
 def setup(bot):
-    bot.add_cog(SimpleCog(bot))
+    bot.add_cog(Setup(bot))
