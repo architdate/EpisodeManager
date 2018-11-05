@@ -64,5 +64,6 @@ async def on_ready():
     # Changes our bots Playing Status. type=1(streaming) for a standard game you could remove type and url.
     print('Successfully logged in and booted...!')
 
-
-bot.run('NTA4MzMzMjIyNjIzNTc2MDY1.Dr9uHA.fVWjRW9fJ0cs21-IryZnV12wlQc', bot=True, reconnect=True)
+with open('config.json', 'r') as f:
+    config = json.load(f)
+bot.run(config['bot_token'], bot=True, reconnect=True)
