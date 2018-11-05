@@ -31,7 +31,7 @@ def argsetup(arglist):
 
 if __name__ == "__main__":
     dlr = True
-    
+
     with open('config.json', 'r') as f:
         config = json.load(f)
 
@@ -65,4 +65,4 @@ if __name__ == "__main__":
     if dlr:
         os.system("python rss.py true {}".format(onlynew))
     else:
-        os.system("python rss.py false")
+        os.system("python rss.py false {}".format(onlynew))

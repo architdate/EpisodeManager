@@ -13,11 +13,11 @@ data = json.loads(r.text)
 
 def login(username, password):
     payload = {'username': username, 'password': password}
-    r = requests.post('http://localhost:5134/api/v2/auth/login', data = payload)
+    r = requests.post('http://{}/api/v2/auth/login'.format(config['webui_ipport']), data = payload)
     return r.cookies.get_dict()
 
 def get_feeds(cookie):
-    r = requests.get('http://localhost:5134/api/v2/rss/items', cookies = cookie)
+    r = requests.get('http://{}/api/v2/rss/items'.format(config['webui_ipport']), cookies = cookie)
     items = json.loads(r.text)
     urls = []
     for i in list(items.values()):
@@ -33,7 +33,7 @@ def add_feeds(data, cookie):
         if q in all_urls:
             all_urls.remove(q)
     for u in all_urls:
-        r = requests.post("http://localhost:5134/api/v2/rss/addFeed", data = {'url': u, 'path': ""}, cookies = cookie)
+        r = requests.post("http://{}/api/v2/rss/addFeed".format(config['webui_ipport']), data = {'url': u, 'path': ""}, cookies = cookie)
     return all_urls
 
 def add_rules(data, urls, cookie, onlynew = True):
@@ -45,7 +45,7 @@ def add_rules(data, urls, cookie, onlynew = True):
         rule = json.dumps(form_rule(n[2], n[1], onlynew))
         name = "{} : (Feed: {})".format(n[0], n[1])
         data = 'ruleName={}&ruleDef={}'.format(urllib.parse.quote(name), urllib.parse.quote(rule))
-        r = requests.post('http://localhost:5134/api/v2/rss/setRule', data = data, cookies = cookie, headers = {'Content-Type': 'application/x-www-form-urlencoded'})
+        r = requests.post('http://{}/api/v2/rss/setRule'.format(config['webui_ipport']), data = data, cookies = cookie, headers = {'Content-Type': 'application/x-www-form-urlencoded'})
 
 def form_rule(mustContain, affectedFeeds, onlynew = True):
     with open('sample_rule.json', 'r') as f:
