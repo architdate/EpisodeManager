@@ -1,11 +1,12 @@
 import os
 import json
+import requests
 
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-with open('data.json', 'r') as f:
-    data = json.load(f)
+r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+data = json.loads(r.text)
 
 def unique_identifiers(data):
     i = {}

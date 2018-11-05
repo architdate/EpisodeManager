@@ -1,4 +1,5 @@
 import json
+import requests
 import sys
 import os
 import rss as rssfeed
@@ -8,10 +9,10 @@ def form_data(show, rss, uid, fid, s1, s2, path, tvdb):
 
 def argsetup(arglist):
     dlr = True
-    with open('data.json', 'r') as f:
-        data = json.load(f)
     with open('config.json', 'r') as f:
         config = json.load(f)
+    r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+    data = json.loads(r.text)
     show, rss, uid, fid, s1, s2, path, tvdb, onlynew = arglist
     if onlynew.lower() == "y":
         onlynew = "true"
@@ -20,8 +21,7 @@ def argsetup(arglist):
 
     data.append(form_data(show, rss, uid, fid, s1, s2, path, tvdb))
 
-    with open('data.json', 'w') as f:
-        json.dump(data, f, indent=4)
+    r = requests.put("http://api.jsonbin.io/b/{}".format(config['jsonbin_key']), json = data, headers = {'Content-Type':'application/json'})
 
     if dlr:
         os.system("python rss.py true {} {}".format(onlynew, config['webui_ipport']))
@@ -31,8 +31,12 @@ def argsetup(arglist):
 
 if __name__ == "__main__":
     dlr = True
-    with open('data.json', 'r') as f:
-        data = json.load(f)
+    
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+
+    r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+    data = json.loads(r.text)
     
     if len(sys.argv) == 1:
         # Inputs
@@ -56,8 +60,7 @@ if __name__ == "__main__":
 
     data.append(form_data(show, rss, uid, fid, s1, s2, path, tvdb))
 
-    with open('data.json', 'w') as f:
-        json.dump(data, f, indent=4)
+    r = requests.put("http://api.jsonbin.io/b/{}".format(config['jsonbin_key']), json = data, headers = {'Content-Type':'application/json'})
 
     if dlr:
         os.system("python rss.py true {}".format(onlynew))

@@ -5,11 +5,11 @@ import json
 import sys
 import os
 
-with open('data.json', 'r') as f:
-    data = json.load(f)
-
 with open('config.json', 'r') as f:
     config = json.load(f)
+
+r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+data = json.loads(r.text)
 
 def login(username, password):
     payload = {'username': username, 'password': password}

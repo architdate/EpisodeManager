@@ -5,9 +5,13 @@ import notify
 import subprocess
 import threading
 import time
+import requests
 
-with open('data.json', 'r') as f:
-    data = json.load(f)
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+data = json.loads(r.text)
 
 def subprocess_execute(command, time_out=60):
     """executing the command with a watchdog"""
