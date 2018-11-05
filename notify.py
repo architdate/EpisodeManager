@@ -85,6 +85,10 @@ def notify(filename):
 
 def notify_discord(filename):
     metadata = extract_data(filename)
-    emjson = {"title": "New Episode Downloaded", "fields": [{"name": "Show", "value":metadata['name'], "inline":"true"},{"name":"Episode Number", "value":metadata['num'], "inline":"true"}], "url": "https://plex.tv", "footer": {"icon_url":"https://flixed.io/wp-content/uploads/2017/10/plex-logo.png", "text": metadata['name']}, "author": {"name": metadata['name'] + " (TVDB ID: {})".format(metadata['id'])}, "image": {"url": metadata['artwork'][0]}}
+    if randomart:
+        artwork = random.choice(metadata['artwork'])
+    else:
+        artwork = metadata['artwork'][0]
+    emjson = {"title": "New Episode Downloaded", "fields": [{"name": "Show", "value":metadata['name'], "inline":"true"},{"name":"Episode Number", "value":metadata['num'], "inline":"true"}], "url": "https://plex.tv", "footer": {"icon_url":"https://flixed.io/wp-content/uploads/2017/10/plex-logo.png", "text": metadata['name']}, "author": {"name": metadata['name'] + " (TVDB ID: {})".format(metadata['id'])}, "image": {"url": artwork}, 'color':15445836}
     resp = {"embeds": [emjson]}
     r = requests.post(config['discord_webhook'], data=json.dumps(resp), headers = {"Content-Type": "application/json"})
