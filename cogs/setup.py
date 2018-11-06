@@ -6,6 +6,15 @@ import setupfeed as sf
 import urllib.parse
 from discord.ext import commands
 
+def nyaarss(searchterm):
+    return "https://nyaa.si/?page=rss&q={}&c=0_0&f=0".format(urllib.parse.quote(searchterm))
+
+def parserss(rssfeed):
+    if rssfeed.startswith('nyaa::'):
+        return nyaarss(rssfeed.split('nyaa::')[1])
+    else:
+        return rssfeed
+
 def tvdb_recommendation(searchterm):
     with open('config.json', 'r') as f:
         config = json.load(f)
@@ -57,7 +66,7 @@ class Setup:
                 if reply:
                     await reply.delete()
                     if reply.content == "cancel()": return
-                    args.append(reply.content.strip())
+                    args.append(parserss(reply.content.strip()))
                     await ctx.send(content = "**Setup Step 3**", embed = plexembed("Setup Plex Show", "Enter a unique file identifier for the RSS Shows (Only files with this string will be downloaded from the feed). The recommendation is : `*{}*`".format(args[0])))
                     reply = await self.check(ctx, 0)
                     if reply:
