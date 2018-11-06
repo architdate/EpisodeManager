@@ -51,9 +51,9 @@ class OwnerCog:
     @commands.is_owner()
     async def pull(self, ctx):
         """Pull new changes from GitHub"""
-        await self.bot.say('Pulling changes')
+        await ctx.send('Pulling changes')
         call(['git', 'pull'])
-        await self.bot.say('All GitHub changes pulled. Reloading current modules')
+        await ctx.send('All GitHub changes pulled. Reloading current modules')
 
 
 def setup(bot):
