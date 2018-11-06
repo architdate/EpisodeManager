@@ -4,6 +4,7 @@ import os
 import requests
 import setupfeed as sf
 import urllib.parse
+from bs4 import BeautifulSoup
 from discord.ext import commands
 
 def nyaarss(searchterm):
@@ -48,6 +49,33 @@ class Setup:
 
         reply = await self.bot.wait_for("message", check=is_numb)
         return reply
+
+    @commands.command(name='showrss')
+    async def showrss(self, ctx, *, search:str = None)
+        def plexembed(title, description, color = discord.Color.gold()):
+            return discord.Embed(color = color, title= title, description=description)
+        if not search:
+            await ctx.send(embed = plexembed("Appropriate Usage", '`plex showrss <query>`'))
+        else:
+            r = requests.get('http://showrss.info/browse')
+            s = BeautifulSoup(r.text, 'html.parser')
+            listopt = s.find_all('option')
+            listopt.pop(0)
+            showlist = {}
+            for i in listopt:
+                try:
+                    if search in listopt[i].get_text():
+                        showlist[listopt[i].get_text()] = listopt[i].get('value')
+                except:
+                    pass
+            e = discord.Embed(color=discord.Color.gold())
+            show, val = []
+            for k, v in showlist:
+                show.append(k)
+                val.append('http://showrss.info/show/{}.rss'.format(v.strip()))
+            e.add_field(name='Shows', value='\n'.join(show))
+            e.add_field(name='RSS Link', value='\n'.join(val))
+            await ctx.send(content='`**SEARCH RESULTS**`', embed=embed)
 
     @commands.command(name='setup')
     async def setup(self, ctx, *, msg:str = None):
