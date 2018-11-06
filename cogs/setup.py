@@ -77,6 +77,54 @@ class Setup:
             except:
                 await ctx.send(content='**`SEARCH RESULTS`**', embed=plexembed("Too many Results", "The search returned too many results (**{}** Results). Please search with more specificity".format(len(showlist))))
 
+    @commands.command(name='addshowrss')
+    async def addshowrss(self, ctx, *, showrssid:int = None):
+        def plexembed(title, description, color = discord.Color.gold()):
+            return discord.Embed(color = color, title= title, description=description)
+        if not showrssid:
+            await ctx.send(embed=plexembed("Appropriate Usage", '`plex addshowrss <rss_id>`'))
+        else:
+            r = requests.get('http://showrss.info/show/{}.rss'.format(showrssid))
+            if r.status_code != 200:
+                return await ctx.send(content='**`INVALID SHOWRSS ID`**', embed=plexembed("Invalid ID","Please use showrss command to search for your show. Error code: {}".format(r.status_code)))
+            showname = r.text.split("showRSS feed: ")[1].split("</title>")[0].strip()
+            await ctx.send(content = "**Setup Step 1**", embed = plexembed("Setup Plex Show", "What is resolution of the show? (Only enter a number among 480/720/1080)"))
+            reply = await self.check(ctx, 0)
+            if reply:
+                await reply.delete()
+                if reply.content == "cancel()": return
+                resolution = reply.content.strip()
+                await ctx.send(content= "**Setup Step 2**", embed = plexembed("Setup Plex Show", "Path to save this show?"))
+                reply = await self.check(ctx, 0)
+                if reply:
+                    await reply.delete()
+                    if reply.content == "cancel()": return
+                    path = reply.content.strip()
+                    await ctx.send(content = "**Setup Step 3**", embed=plexembed("Setup Plex Show", "Enter TVDB ID for being notified about the new episode. Recommended ID is: {}".format(tvdb_recommendation(showname))))
+                    reply = await self.check(ctx, 0)
+                    if reply:
+                        await reply.delete()
+                        if reply.content == "cancel()": return
+                        tvdbid = reply.content.strip()
+                        await ctx.send(content = "**Setup Step 4**", embed = plexembed("Setup Plex Show", "Download new episodes only? (Y/N)"))
+                        reply = await self.check(ctx, 0)
+                        if reply:
+                            await reply.delete()
+                            if reply.content == "cancel()": return
+                            onlynew = reply.content.strip()
+                            args = [showname, 'http://showrss.info/show/{}.rss'.format(showrssid), '{}p'.format(resolution), showname.replace(" ", "."), showname.lower().replace(" ",".")+".", ".", path, tvdbid, onlynew]
+                            await ctx.send(content="**Confirm Selections? (Y/N)**", embed = plexembed("Selections", ", ".join(args)))
+                            reply = await self.check(ctx, 0)
+                            if reply:
+                                await reply.delete()
+                                if reply.content.lower() == "n":
+                                    await ctx.send(embed = plexembed("Plex Show Setup Cancelled", "The Show **{}** was not added".format(args[0])))
+                                    return
+                                else:
+                                    sf.argsetup(args)
+                                    embed = discord.Embed(color=discord.Color.gold(), title='Plex Show Setup Complete', description='The Show **{}** was added successfully. Enjoy your show! You can check for updates in the #updates channel'.format(args[0]))
+                                    await ctx.send(embed=embed)
+
     @commands.command(name='setup')
     async def setup(self, ctx, *, msg:str = None):
         args = []
