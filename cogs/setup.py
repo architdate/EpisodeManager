@@ -51,7 +51,7 @@ class Setup:
         return reply
 
     @commands.command(name='showrss')
-    async def showrss(self, ctx, *, search:str = None)
+    async def showrss(self, ctx, *, search:str = None):
         def plexembed(title, description, color = discord.Color.gold()):
             return discord.Embed(color = color, title= title, description=description)
         if not search:
