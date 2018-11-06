@@ -63,19 +63,19 @@ class Setup:
             listopt.pop(0)
             showlist = {}
             for i in listopt:
-                try:
-                    if search.lower() in listopt[i].get_text().lower():
-                        showlist[listopt[i].get_text()] = listopt[i].get('value')
-                except:
-                    pass
-            e = discord.Embed(color=discord.Color.gold())
+                if search.lower() in i.get_text().lower():
+                    showlist[i.get_text()] = i.get('value')
+            e = discord.Embed(color=discord.Color.gold(), title = "Search Results", description= "showrss.info returned with **{}** results:".format(len(showlist)))
             show, val = [], []
-            for k, v in showlist:
+            for k, v in showlist.items():
                 show.append(k)
                 val.append('http://showrss.info/show/{}.rss'.format(v.strip()))
             e.add_field(name='Shows', value='\n'.join(show))
             e.add_field(name='RSS Link', value='\n'.join(val))
-            await ctx.send(content='`**SEARCH RESULTS**`', embed=e)
+            try:
+                await ctx.send(content='**`SEARCH RESULTS`**', embed=e)
+            except:
+                await ctx.send(content='**`SEARCH RESULTS`**', embed=plexembed("Too many Results", "The search returned too many results (**{}** Results). Please search with more specificity".format(len(showrss))))
 
     @commands.command(name='setup')
     async def setup(self, ctx, *, msg:str = None):
