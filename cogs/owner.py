@@ -53,7 +53,7 @@ class OwnerCog:
         """Pull new changes from GitHub"""
         await ctx.send('Pulling changes')
         call(['git', 'pull'])
-        await ctx.send('All GitHub changes pulled. Reloading current modules')
+        await ctx.send('All GitHub changes pulled. Please reload necessary modules')
 
 
 def setup(bot):
