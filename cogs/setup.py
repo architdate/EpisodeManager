@@ -64,12 +64,12 @@ class Setup:
             showlist = {}
             for i in listopt:
                 try:
-                    if search in listopt[i].get_text():
+                    if search.lower() in listopt[i].get_text().lower():
                         showlist[listopt[i].get_text()] = listopt[i].get('value')
                 except:
                     pass
             e = discord.Embed(color=discord.Color.gold())
-            show, val = []
+            show, val = [], []
             for k, v in showlist:
                 show.append(k)
                 val.append('http://showrss.info/show/{}.rss'.format(v.strip()))
