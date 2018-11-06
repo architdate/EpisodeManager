@@ -1,5 +1,5 @@
 from discord.ext import commands
-
+from subprocess import call
 
 class OwnerCog:
 
@@ -46,6 +46,14 @@ class OwnerCog:
             await ctx.send('**`ERROR:`** {} - {}'.format(type(e).__name__, e))
         else:
             await ctx.send('**`SUCCESS`**')
+
+    @commands.command(name='gitpull')
+    @commands.is_owner()
+    async def pull(self):
+        """Pull new changes from GitHub"""
+        await self.bot.say('Pulling changes')
+        call(['git', 'pull'])
+        await self.bot.say('All GitHub changes pulled. Reloading current modules')
 
 
 def setup(bot):
