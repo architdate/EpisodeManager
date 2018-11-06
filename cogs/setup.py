@@ -75,7 +75,7 @@ class Setup:
                 val.append('http://showrss.info/show/{}.rss'.format(v.strip()))
             e.add_field(name='Shows', value='\n'.join(show))
             e.add_field(name='RSS Link', value='\n'.join(val))
-            await ctx.send(content='`**SEARCH RESULTS**`', embed=embed)
+            await ctx.send(content='`**SEARCH RESULTS**`', embed=e)
 
     @commands.command(name='setup')
     async def setup(self, ctx, *, msg:str = None):
