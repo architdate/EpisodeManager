@@ -49,7 +49,7 @@ class OwnerCog:
 
     @commands.command(name='gitpull')
     @commands.is_owner()
-    async def pull(self):
+    async def pull(self, ctx):
         """Pull new changes from GitHub"""
         await self.bot.say('Pulling changes')
         call(['git', 'pull'])
