@@ -75,7 +75,7 @@ class Setup:
             try:
                 await ctx.send(content='**`SEARCH RESULTS`**', embed=e)
             except:
-                await ctx.send(content='**`SEARCH RESULTS`**', embed=plexembed("Too many Results", "The search returned too many results (**{}** Results). Please search with more specificity".format(len(showrss))))
+                await ctx.send(content='**`SEARCH RESULTS`**', embed=plexembed("Too many Results", "The search returned too many results (**{}** Results). Please search with more specificity".format(len(showlist))))
 
     @commands.command(name='setup')
     async def setup(self, ctx, *, msg:str = None):
