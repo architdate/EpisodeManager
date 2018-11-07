@@ -28,7 +28,7 @@ def rename(path, uid):
             for k, v in uid.items():
                 if k.lower() in tf.lower():
                     ext = "." + tf.rsplit(".", 1)[1]
-                    e = tf.split(v[1][0])[1].split(v[1][1])[0]
+                    e = tf.lower().split(v[1][0].lower())[1].split(v[1][1])[0]
                     tf = v[0] + " - " + e + ext
                     os.rename(f, tf)
     os.chdir(init_path)
