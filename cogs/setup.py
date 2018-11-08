@@ -52,6 +52,8 @@ class Setup:
 
     @commands.command(name='ongoing')
     async def ongoing(self, ctx):
+        with open('config.json', 'r') as f:
+            config = json.load(f)
         r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
         data = json.loads(r.text)
         shows = []
