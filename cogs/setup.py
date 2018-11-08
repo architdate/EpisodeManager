@@ -50,6 +50,17 @@ class Setup:
         reply = await self.bot.wait_for("message", check=is_numb)
         return reply
 
+    @commands.command(name='ongoing')
+    async def ongoing(self, ctx):
+        r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+        data = json.loads(r.text)
+        shows = []
+        for i in data:
+            shows.append(i[0])
+        e = discord.Embed(color=discord.Color.gold(), title = "Ongoing Shows", description= "Currently, there are **{}** ongoing shows being tracked.".format(len(shows)))
+        e.add_field(name='Shows', value='\n'.join(shows))
+        await ctx.send(embed=e)
+
     @commands.command(name='showrss')
     async def showrss(self, ctx, *, search:str = None):
         def plexembed(title, description, color = discord.Color.gold()):
