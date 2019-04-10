@@ -63,6 +63,45 @@ class Setup:
         e.add_field(name='Shows', value='\n'.join(shows))
         await ctx.send(embed=e)
 
+    @commands.command(name='delshow')
+    async def delshow(self, ctx, *, show:str = None):
+        if show == None:
+            await ctx.send('`USAGE: plex delshow <showname>`')
+        else:
+            with open('config.json', 'r') as f:
+                config = json.load(f)
+            r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+            data = json.loads(r.text)
+            valid_shows = []
+            showfound = False
+            for i in data:
+                if i[0] == show:
+                    valid_shows.append(i)
+            if len(valid_shows) == 1:
+                data.remove(valid_shows[0])
+                await ctx.send('`SHOW {} DELETED`'.format(show))
+                r = requests.put("http://api.jsonbin.io/b/{}".format(config['jsonbin_key']), json = data, headers = {'Content-Type':'application/json'})
+            elif len(valid_shows) > 1:
+                await ctx.send('`{} SHOWS FOUND. PLEASE TYPE THE NUMBER OF THE SHOW YOU WANT TO DELETE`'.format(len(valid_shows)))
+                e = discord.Embed(color=discord.Color.gold(), title = "Which show to delete?", description= "Currently, there are **{}** matched shows being tracked.".format(len(valid_shows)))
+                showstr = ''
+                for i in range(len(valid_shows)):
+                    showstr += '{}. {}\n'.format(i+1, valid_shows[i][1])
+                e.add_field(name='Shows', value=showstr.strip())
+                await ctx.send(embed=e)
+                reply = await self.check(ctx, 0)
+                if reply:
+                    if reply.content.strip().isdigit() and int(reply.content.strip())<= len(valid_shows):
+                        print(valid_shows[int(reply.content.strip()) - 1])
+                        data.remove(valid_shows[int(reply.content.strip()) - 1])
+                        await ctx.send('`SHOW {} DELETED`'.format(show))
+                    else:
+                        return await ctx.send('`INVALID REPLY`')
+                r = requests.put("http://api.jsonbin.io/b/{}".format(config['jsonbin_key']), json = data, headers = {'Content-Type':'application/json'})
+            showfound = (len(valid_shows) > 0)
+            if not showfound:
+                await ctx.send('`NO SUCH SHOW FOUND IN CURRENT ONGOING EPISODES. USE ongoing COMMAND TO LIST OUT THE ONGOING SHOWS`')
+
     @commands.command(name='showrss')
     async def showrss(self, ctx, *, search:str = None):
         def plexembed(title, description, color = discord.Color.gold()):

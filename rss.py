@@ -24,6 +24,14 @@ def get_feeds(cookie):
         urls.append(i['url'])
     return urls
 
+def get_series_names_from_rules(cookie):
+    r = requests.get('http://{}/api/v2/rss/rules'.format(config['webui_ipport']), cookies = cookie)
+    items = json.loads(r.text)
+    shows = []
+    for i in list(items.keys()):
+        shows.append(i.split(" : ")[0])
+    return shows
+
 def add_feeds(data, cookie):
     all_urls = []
     for d in data:
@@ -37,9 +45,10 @@ def add_feeds(data, cookie):
     return all_urls
 
 def add_rules(data, urls, cookie, onlynew = True):
+    shows = get_series_names_from_rules(cookie)
     new_data = []
     for d in data:
-        if d[1] in urls:
+        if d[0] not in shows:
             new_data.append(d)
     for n in new_data:
         rule = json.dumps(form_rule(n[2], n[1], onlynew))

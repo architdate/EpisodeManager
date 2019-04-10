@@ -2,8 +2,14 @@ import requests
 import urllib
 import json
 import random
+import sys
+import os
 
 randomart = True
+try:
+    os.chdir(os.path.dirname(sys.argv[0]))
+except:
+    pass
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -92,3 +98,16 @@ def notify_discord(filename):
     emjson = {"title": "New Episode Downloaded", "fields": [{"name": "Show", "value":metadata['name'], "inline":"true"},{"name":"Episode Number", "value":metadata['num'], "inline":"true"}], "url": "https://plex.tv", "footer": {"icon_url":"https://flixed.io/wp-content/uploads/2017/10/plex-logo.png", "text": metadata['name']}, "author": {"name": metadata['name'] + " (TVDB ID: {})".format(metadata['id'])}, "image": {"url": artwork}, 'color':15445836}
     resp = {"embeds": [emjson]}
     r = requests.post(config['discord_webhook'], data=json.dumps(resp), headers = {"Content-Type": "application/json"})
+
+def sonarr_notify(tvdb_id, series_title, ep):
+    if randomart:
+        artwork = random.choice(tvdb_art(tvdb_id))
+    else:
+        artwork = tvdb_art(tvdb_art)[0]
+    emjson = {"title": "New Episode Downloaded", "fields": [{"name": "Show", "value":series_title, "inline":"true"},{"name":"Episode Number", "value":ep, "inline":"true"}], "url": "https://plex.tv", "footer": {"icon_url":"https://flixed.io/wp-content/uploads/2017/10/plex-logo.png", "text": series_title}, "author": {"name": series_title + " (TVDB ID: {})".format(tvdb_id)}, "image": {"url": artwork}, 'color':15445836}
+    resp = {"embeds": [emjson]}
+    r = requests.post(config['discord_webhook'], data=json.dumps(resp), headers = {"Content-Type": "application/json"})
+
+if __name__ == "__main__":
+    if len(sys.argv) == 4:
+        sonarr_notify(int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
