@@ -107,6 +107,10 @@ def sonarr_notify(tvdb_id, series_title, ep):
     emjson = {"title": "New Episode Downloaded", "fields": [{"name": "Show", "value":series_title, "inline":"true"},{"name":"Episode Number", "value":ep, "inline":"true"}], "url": "https://plex.tv", "footer": {"icon_url":"https://flixed.io/wp-content/uploads/2017/10/plex-logo.png", "text": series_title}, "author": {"name": series_title + " (TVDB ID: {})".format(tvdb_id)}, "image": {"url": artwork}, 'color':15445836}
     resp = {"embeds": [emjson]}
     r = requests.post(config['discord_webhook'], data=json.dumps(resp), headers = {"Content-Type": "application/json"})
+    metadata_str = "*New Episode Downloaded*\n\n*Series:* {}\n*Episode Number:* {}\n*TVDB ID:* {}".format(series_title, ep, tvdb_id)
+    send_image(artwork, config['chat_id'])
+    send_message(metadata_str, config['chat_id'])
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 4:
