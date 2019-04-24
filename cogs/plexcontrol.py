@@ -20,16 +20,16 @@ class PlexControl:
     async def scan(self, ctx, category):
         """Category scan"""
         if category != "movies" and category != "anime" and category != "tv":
-            ctx.send('**`INVALID CATEGORY. PLEASE USE EITHER movies OR anime OR tv AS CATEGORIES`**')
+            await ctx.send('**`INVALID CATEGORY. PLEASE USE EITHER movies OR anime OR tv AS CATEGORIES`**')
         if category == "movies":
             misc.scan_movies(self.bot.plex)
-            ctx.send('**`SCAN COMPLETE`**')
+            await ctx.send('**`SCAN COMPLETE`**')
         if category == "anime":
             misc.scan_anime(self.bot.plex)
-            ctx.send('**`SCAN COMPLETE`**')
+            await ctx.send('**`SCAN COMPLETE`**')
         if category == "tv":
             misc.scan_tv(self.bot.plex)
-            ctx.send('**`SCAN COMPLETE`**')
+            await ctx.send('**`SCAN COMPLETE`**')
 
 
 def setup(bot):
