@@ -3,6 +3,7 @@ import json
 import os
 import requests
 import setupfeed as sf
+import misc
 import urllib.parse
 from bs4 import BeautifulSoup
 from discord.ext import commands
