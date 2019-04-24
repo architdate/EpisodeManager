@@ -1,5 +1,6 @@
 import discord
 import json
+import misc
 from discord.ext import commands
 
 import sys, traceback
@@ -67,4 +68,6 @@ async def on_ready():
 
 with open('config.json', 'r') as f:
     config = json.load(f)
+bot.plexacc = misc.login_account(config['plex_username'], config['plex_password'])
+bot.plex = misc.login_server(bot.plexacc, config['server_name'])
 bot.run(config['bot_token'], bot=True, reconnect=True)
