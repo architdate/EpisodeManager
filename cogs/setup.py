@@ -124,8 +124,8 @@ class Setup:
                 mag.append(i['magnetlink'])
             x = ["[link]({})".format(y) for y in mag]
             e.add_field(name='Torrent', value='\n'.join(torrent))
-            e.add_field(name='Seeders', value='\n'.join(s))
-            e.add_field(name='Leechers', value='\n'.join(l))
+            e.add_field(name='Seeders', value='\n'.join(str(s)))
+            e.add_field(name='Leechers', value='\n'.join(str(l)))
             e.add_field(name='Magnet', value='\n'.join(x))
             try:
                 await ctx.send(content='**`SEARCH RESULTS`**', embed= e)
