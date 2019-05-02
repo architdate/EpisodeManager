@@ -122,11 +122,10 @@ class Setup:
                 s.append(i['seed'])
                 l.append(i['leech'])
                 mag.append(i['magnetlink'])
-            x = ["[link]({})".format(y) for y in mag]
-            e.add_field(name='Torrent', value='\n'.join(torrent))
-            e.add_field(name='Seeders', value='\n'.join(str(s)))
-            e.add_field(name='Leechers', value='\n'.join(str(l)))
-            e.add_field(name='Magnet', value='\n'.join(x))
+            e.add_field(name='Torrent', value='\n'.join([x[:20] for x in torrent]))
+            e.add_field(name='Seeders', value='\n'.join([str(x) for x in s]))
+            e.add_field(name='Leechers', value='\n'.join([str(x) for x in l]))
+            e.add_field(name='Magnet', value='\n'.join(['[link]("{}")'.format(x) for x in mag]))
             try:
                 await ctx.send(content='**`SEARCH RESULTS`**', embed= e)
             except:
