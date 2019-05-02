@@ -103,6 +103,36 @@ class Setup:
             if not showfound:
                 await ctx.send('`NO SUCH SHOW FOUND IN CURRENT ONGOING EPISODES. USE ongoing COMMAND TO LIST OUT THE ONGOING SHOWS`')
 
+    @commands.command(name='tsearch')
+    async def tsearch(self, ctx, *, search:str = None, num:int = 10):
+        def plexembed(title, description, color = discord.Color.gold()):
+            return discord.Embed(color = color, title = title, description = description)
+        if not search:
+            await ctx.send(embed = plexembed("Appropriate Usage", '`plex tsearch <query>`'))
+        else:
+            r = requests.get('https://searx.org/?q={}&categories=files&language=en-US&format=json'.format(urllib.parse.quote(search)))
+            data = json.loads(r.text)
+            query = data['query']
+            results = data['results']
+            results = results[:num]
+            e = discord.Embed(color=discord.Color.gold(), title = "Search Results", description= "The top {} results sorted by seeders are:".format(num))
+            torrent, s, l, mag = [],[],[],[]
+            for i in results:
+                torrent.append(i['title'])
+                s.append(i['seed'])
+                l.append(i['leech'])
+                mag.append(i['magnetlink'])
+            x = ["[link]({})".format(y) for y in mag]
+            e.add_field(name='Torrent', value='\n'.join(torrent))
+            e.add_field(name='Seeders', value='\n'.join(s))
+            e.add_field(name='Leechers', value='\n'.join(l))
+            e.add_field(name='Magnet', value='\n'.join(x))
+            try:
+                await ctx.send(content='**`SEARCH RESULTS`**', embed= e)
+            except:
+                await ctx.send("Some error occured")
+
+
     @commands.command(name='showrss')
     async def showrss(self, ctx, *, search:str = None):
         def plexembed(title, description, color = discord.Color.gold()):
