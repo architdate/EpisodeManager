@@ -43,7 +43,9 @@ def get_prefix(bot, message):
 # Think of it like a dot path import
 initial_extensions = ['cogs.setup',
                       'cogs.members',
-                      'cogs.owner']
+                      'cogs.owner',
+                      'cogs.plexcontrol',
+                      'cogs.drivecontrol']
 
 bot = commands.Bot(command_prefix=get_prefix, description='A Plex Show Setup Bot')
 

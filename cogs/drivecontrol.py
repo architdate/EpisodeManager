@@ -1,4 +1,5 @@
 from __future__ import print_function
+from requests import post
 import discord
 from discord.ext import commands
 import misc
@@ -14,6 +15,10 @@ FOLDER = 'application/vnd.google-apps.folder'
 
 def plexembed(title, description, color = discord.Color.gold()):
     return discord.Embed(color = color, title= title, description=description)
+
+def hastebin(content, url='https://hastebin.com'):
+    r = post('{}/documents'.format(url), data=content.encode('utf-8'))
+    return url + '/' + r.json()['key']
 
 def search(service, string):
 
@@ -99,8 +104,9 @@ def main(searchterm):
 
     returntext = ''
 
-    
-    permission = {"role": "reader", "type": "anyone"}
+    ownedlinks = [(item, service.files().get(fileId=item['id'], fields='webViewLink').execute()['webViewLink']) for item in ownedresults]
+    unownedlinks = [(item, service.files().get(fileId=item['id'], fields='webViewLink').execute()['webViewLink']) for item in unownedresults]
+    '''
     for item in ownedresults:
         try:
             service.permissions().create(fileId=item['id'], body=permission).execute()
@@ -110,18 +116,56 @@ def main(searchterm):
             returntext += "Cannot share this file: {}".format(item['name'])
 
     returntext += "Found {} matches in your google drive which you do not own.".format(len(unownedresults))
+    '''
                   
-    return returntext
+    return [ownedlinks, unownedlinks, service]
 
 class DriveControl:
     def __init__(self, bot):
         self.bot = bot
 
+    async def check(self, ctx, val):
+        def is_numb(msg):
+            if msg.author == ctx.message.author:
+                if msg.content.isdigit() and val != 0:
+                    return 0 < int(msg.content) < val
+                elif val == 0:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+        reply = await self.bot.wait_for("message", check=is_numb)
+        return reply
+
     @commands.is_owner()
-    @commands.command(name='drive')
+    @commands.command(name='drive2')
     async def drivelookup(self, ctx, *, search):
         """Get Drive Link if applicable"""
-        await ctx.send(embed=plexembed("Google Drive Results:", main(search)))
+        ownedlinks, unownedlinks, service = main(search)
+        names = [item[0]['name'] for item in ownedlinks]
+        hastebindump = ['{} : {}'.format(item[0]['name'], item[1]) for item in unownedlinks]
+        e = discord.Embed(color=discord.Color.gold(), title = "Search Results", description= "Found the following shows on your Google Drives")
+        e.add_field(name="Index", value = '\n'.join([str(val) for val in range(1,len(ownedlinks)+1)]))
+        e.add_field(name="Name", value = '\n'.join(names))
+        await ctx.send("Reply with space separated indices of the links you want to generate", embed=e)
+        reply = await self.check(ctx, 0)
+        if reply:
+            if reply.content == "cancel()" or reply.content == "cancel":
+                await reply.delete()
+                return await ctx.send("Task cancelled!")
+            else:
+                indices = [int(x)-1 for x in reply.content.split(" ")]
+                returnlist = ['[{}]({})'.format(ownedlinks[index][0]['name'], ownedlinks[index][1]) for index in indices]
+                for i in range(len(indices)):
+                    permission = {"role": "reader", "type": "anyone"}
+                    index = indices[i]
+                    service.permissions().create(fileId=ownedlinks[index][0]['id'], body=permission).execute()
+        e = discord.Embed(color=discord.Color.gold(), title = "Google Drive Results", description= "Generated links successfully. You also have {} unowned links which cannot be shared. However, you can access these links since they are shared with you.".format(len(unownedlinks)))
+        e.add_field(name="Shareable Links", value = '\n'.join(returnlist))
+        e.add_field(name="Unshared Links", value = "[Hastebin Link]({})".format(hastebin('\n'.join(hastebindump))))
+        await ctx.send(content='**`SEARCH RESULTS`**', embed=e)
 
 
 def setup(bot):
