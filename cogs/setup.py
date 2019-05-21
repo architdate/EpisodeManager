@@ -3,6 +3,7 @@ import json
 import os
 import requests
 import setupfeed as sf
+import rss as rssfeed
 import misc
 import urllib.parse
 from bs4 import BeautifulSoup
@@ -122,14 +123,34 @@ class Setup:
                 s.append(i['seed'])
                 l.append(i['leech'])
                 mag.append(i['magnetlink'])
-            e.add_field(name='Torrent', value='\n'.join([x[:20] for x in torrent]))
+            e.add_field(name='Torrent', value='\n'.join([x.split("»")[0][20:] for x in torrent]))
             e.add_field(name='Seeders', value='\n'.join([str(x) for x in s]))
             e.add_field(name='Leechers', value='\n'.join([str(x) for x in l]))
-            e.add_field(name='Magnet', value='\n'.join(['[link]("{}")'.format(x) for x in mag]))
-            try:
-                await ctx.send(content='**`SEARCH RESULTS`**', embed= e)
-            except:
-                await ctx.send("Some error occured")
+            # e.add_field(name='Magnet', value='\n'.join(['[link]("{}")'.format(x) for x in mag]))
+            await ctx.send(content='**`SEARCH RESULTS`**', embed= e)
+            await ctx.send("Enter the magnet links you would like to download. [Space separated indices]")
+            reply = await self.check(ctx, 0)
+            if reply:
+                if reply.content == "cancel()" or reply.content == "cancel":
+                    await reply.delete()
+                    return await ctx.send("Task cancelled!")
+                else:
+                    await reply.delete()
+                    magnetlist = [mag[int(x)-1] for x in reply.content.split(" ")]
+                    print(magnetlist)
+                    await ctx.send("Path to save torrent?")
+                    reply = await self.check(ctx, 0)
+                    if reply:
+                        if reply.content == "cancel()" or reply.content == "cancel":
+                            await reply.delete()
+                            return await ctx.send("Task cancelled!")
+                        else:
+                            await reply.delete()
+                            with open('config.json', 'r') as f:
+                                config = json.load(f)
+                            cookie = rssfeed.login(config['webui_user'], config['webui_pass'])
+                            rssfeed.download_magnet(magnetlist, reply.content.strip(), cookie)
+                            return await ctx.send("Torrent(s) have been added to the download queue")
 
 
     @commands.command(name='showrss')

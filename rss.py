@@ -56,6 +56,11 @@ def add_rules(data, urls, cookie, onlynew = True):
         data = 'ruleName={}&ruleDef={}'.format(urllib.parse.quote(name), urllib.parse.quote(rule))
         r = requests.post('http://{}/api/v2/rss/setRule'.format(config['webui_ipport']), data = data, cookies = cookie, headers = {'Content-Type': 'application/x-www-form-urlencoded'})
 
+def download_magnet(magnetlist, savepath, cookie):
+    dummy_file = {'_dummy': (None, '_dummy')}
+    options = {'urls': '\n'.join(magnetlist), 'savepath': savepath}
+    return requests.post('http://{}/api/v2/torrents/add'.format(config['webui_ipport']), data = options, cookies = cookie , files=dummy_file)
+
 def form_rule(mustContain, affectedFeeds, onlynew = True):
     with open('sample_rule.json', 'r') as f:
         rule = json.load(f)
