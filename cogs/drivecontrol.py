@@ -140,7 +140,7 @@ class DriveControl:
         return reply
 
     @commands.is_owner()
-    @commands.command(name='drive2')
+    @commands.command(name='drive')
     async def drivelookup(self, ctx, *, search):
         """Get Drive Link if applicable"""
         ownedlinks, unownedlinks, service = main(search)
