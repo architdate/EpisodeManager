@@ -144,8 +144,15 @@ class DriveControl:
     async def drivelookup(self, ctx, *, search):
         """Get Drive Link if applicable"""
         ownedlinks, unownedlinks, service = main(search)
-        names = [item[0]['name'] for item in ownedlinks]
         hastebindump = ['{} : {}'.format(item[0]['name'], item[1]) for item in unownedlinks]
+        if len(ownedlinks) == 0:
+            if len(unownedlinks) == 0:
+                return await ctx.send("No results found!")
+            else:
+                e = discord.Embed(color=discord.Color.gold(), title = "Google Drive Results", description= "Generated links successfully. You have {} unowned links which cannot be shared. However, you can access these links since they are shared with you.".format(len(unownedlinks)))
+                e.add_field(name="Unshared Links", value = "[Hastebin Link]({})".format(hastebin('\n'.join(hastebindump))))
+                return await ctx.send(content='**`SEARCH RESULTS`**', embed=e)
+        names = [item[0]['name'] for item in ownedlinks]
         e = discord.Embed(color=discord.Color.gold(), title = "Search Results", description= "Found the following shows on your Google Drives")
         e.add_field(name="Index", value = '\n'.join([str(val) for val in range(1,len(ownedlinks)+1)]))
         e.add_field(name="Name", value = '\n'.join(names))
@@ -164,7 +171,8 @@ class DriveControl:
                     service.permissions().create(fileId=ownedlinks[index][0]['id'], body=permission).execute()
         e = discord.Embed(color=discord.Color.gold(), title = "Google Drive Results", description= "Generated links successfully. You also have {} unowned links which cannot be shared. However, you can access these links since they are shared with you.".format(len(unownedlinks)))
         e.add_field(name="Shareable Links", value = '\n'.join(returnlist))
-        e.add_field(name="Unshared Links", value = "[Hastebin Link]({})".format(hastebin('\n'.join(hastebindump))))
+        if len(unownedlinks) > 0:
+            e.add_field(name="Unshared Links", value = "[Hastebin Link]({})".format(hastebin('\n'.join(hastebindump))))
         await ctx.send(content='**`SEARCH RESULTS`**', embed=e)
 
 
