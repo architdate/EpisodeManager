@@ -8,7 +8,7 @@ import os
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+r = requests.get("https://api.myjson.com/bins/{}".format(config['jsonbin_key']))
 data = json.loads(r.text)
 
 def login(username, password):

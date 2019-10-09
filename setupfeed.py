@@ -11,7 +11,7 @@ def argsetup(arglist):
     dlr = True
     with open('config.json', 'r') as f:
         config = json.load(f)
-    r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+    r = requests.get("https://api.myjson.com/bins/{}".format(config['jsonbin_key']))
     data = json.loads(r.text)
     show, rss, uid, fid, s1, s2, path, tvdb, onlynew = arglist
     if onlynew.lower() == "y":
@@ -21,7 +21,7 @@ def argsetup(arglist):
 
     data.append(form_data(show, rss, uid, fid, s1, s2, path, tvdb))
 
-    r = requests.put("http://api.jsonbin.io/b/{}".format(config['jsonbin_key']), json = data, headers = {'Content-Type':'application/json'})
+    r = requests.put("https://api.myjson.com/bins/{}".format(config['jsonbin_key']), json = data)
 
     if dlr:
         os.system("{} rss.py true {}".format(config['python_call'], onlynew))
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     with open('config.json', 'r') as f:
         config = json.load(f)
 
-    r = requests.get("http://api.jsonbin.io/b/{}/latest".format(config['jsonbin_key']))
+    r = requests.get("https://api.myjson.com/bins/{}".format(config['jsonbin_key']))
     data = json.loads(r.text)
     
     if len(sys.argv) == 1:
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     data.append(form_data(show, rss, uid, fid, s1, s2, path, tvdb))
 
-    r = requests.put("http://api.jsonbin.io/b/{}".format(config['jsonbin_key']), json = data, headers = {'Content-Type':'application/json'})
+    r = requests.put("https://api.myjson.com/bins/{}".format(config['jsonbin_key']), json = data)
 
     if dlr:
         os.system("python rss.py true {}".format(onlynew))
