@@ -56,7 +56,7 @@ class Setup:
     async def ongoing(self, ctx):
         with open('config.json', 'r') as f:
             config = json.load(f)
-        r = requests.get("https://api.myjson.com/bins/{}".format(config['jsonbin_key']))
+        r = requests.get("https://jsonblob.com/api/jsonBlob/{}".format(config['jsonbin_key']))
         data = json.loads(r.text)
         shows = []
         for i in data:
@@ -72,7 +72,7 @@ class Setup:
         else:
             with open('config.json', 'r') as f:
                 config = json.load(f)
-            r = requests.get("https://api.myjson.com/bins/{}".format(config['jsonbin_key']))
+            r = requests.get("https://jsonblob.com/api/jsonBlob/{}".format(config['jsonbin_key']))
             data = json.loads(r.text)
             valid_shows = []
             showfound = False
@@ -82,7 +82,7 @@ class Setup:
             if len(valid_shows) == 1:
                 data.remove(valid_shows[0])
                 await ctx.send('`SHOW {} DELETED`'.format(show))
-                r = requests.put("https://api.myjson.com/bins/{}".format(config['jsonbin_key']), json = data)
+                r = requests.put("https://jsonblob.com/api/jsonBlob/{}".format(config['jsonbin_key']), json = data)
             elif len(valid_shows) > 1:
                 await ctx.send('`{} SHOWS FOUND. PLEASE TYPE THE NUMBER OF THE SHOW YOU WANT TO DELETE`'.format(len(valid_shows)))
                 e = discord.Embed(color=discord.Color.gold(), title = "Which show to delete?", description= "Currently, there are **{}** matched shows being tracked.".format(len(valid_shows)))
@@ -99,7 +99,7 @@ class Setup:
                         await ctx.send('`SHOW {} DELETED`'.format(show))
                     else:
                         return await ctx.send('`INVALID REPLY`')
-                r = requests.put("https://api.myjson.com/bins/{}".format(config['jsonbin_key']), json = data)
+                r = requests.put("https://jsonblob.com/api/jsonBlob/{}".format(config['jsonbin_key']), json = data)
             showfound = (len(valid_shows) > 0)
             if not showfound:
                 await ctx.send('`NO SUCH SHOW FOUND IN CURRENT ONGOING EPISODES. USE ongoing COMMAND TO LIST OUT THE ONGOING SHOWS`')
