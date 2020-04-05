@@ -5,7 +5,7 @@ import misc
 def plexembed(title, description, color = discord.Color.gold()):
     return discord.Embed(color = color, title= title, description=description)
 
-class PlexControl:
+class PlexControl(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

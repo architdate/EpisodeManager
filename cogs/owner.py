@@ -1,7 +1,7 @@
 from discord.ext import commands
 from subprocess import call
 
-class OwnerCog:
+class OwnerCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot

@@ -120,7 +120,7 @@ def main(searchterm):
                   
     return [ownedlinks, unownedlinks, service]
 
-class DriveControl:
+class DriveControl(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
