@@ -31,7 +31,7 @@ def tvdb_recommendation(searchterm):
         series_id = -1
     return series_id
 
-class Setup:
+class Setup(commands.Cog):
     """SimpleCog"""
 
     def __init__(self, bot):
