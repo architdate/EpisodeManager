@@ -58,6 +58,7 @@ def transfer(source, path_dict):
                         os.makedirs(path_dict[a])
                     shutil.move(f, path_dict[a] + "\\" + f)
                     filepathlist.append(path_dict[a])
+                    print(f)
                     notify.notify(f)
                     notify.notify_discord(f)
     os.chdir(init_path)
@@ -67,6 +68,7 @@ def refresh_plex(plexpath, filepathlist):
     init_path = os.getcwd()
     os.chdir(plexpath)
     for i in filepathlist:
+        print("Scanning {} ...".format(i))
         retval = subprocess_execute('"Plex Media Scanner" -s -r -x -d {}'.format(i), 300)
         print("Scan Finished with Code : {}".format(retval))
     os.chdir(init_path)
@@ -74,3 +76,6 @@ def refresh_plex(plexpath, filepathlist):
 def main():
     fpl = transfer("F:\\RSSDownloads", path_dict(data))
     refresh_plex("C:\\Program Files (x86)\\Plex\\Plex Media Server", fpl)
+
+if __name__ == "__main__":
+    main()

@@ -113,5 +113,4 @@ def sonarr_notify(tvdb_id, series_title, ep):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 4:
-        sonarr_notify(int(sys.argv[1]), sys.argv[2], int(sys.argv[3]))
+    notify_discord("Tower of God - 01.mkv")

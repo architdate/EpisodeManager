@@ -7,6 +7,13 @@ with open('config.json', 'r') as f:
 
 r = requests.get("https://jsonblob.com/api/jsonBlob/{}".format(config['jsonbin_key']))
 data = json.loads(r.text)
+with open('episodes.json', 'r') as f:
+    epis = json.load(f)
+    
+if epis != data:
+    print("Backing up latest data locally ...")
+    with open('episodes.json', 'w') as f:
+        f.write(json.dumps(data, indent=4))
 
 def unique_identifiers(data):
     i = {}

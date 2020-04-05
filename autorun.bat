@@ -6,5 +6,5 @@ timeout /t 10
 
 :: Execute code
 py -3.5 run.py %*
-pause
+
 exit
