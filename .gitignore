@@ -106,3 +106,6 @@ venv.bak/
 # sensitive files
 config.json
 data.json
+episodes.json
+credentials.json
+token.pickle
